@@ -1,0 +1,76 @@
+.dashboard-page {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.dashboard-header {
+  align-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: space-between;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+}
+
+.dashboard-header p {
+  margin: 0.25rem 0 0;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.search-field {
+  width: 100%;
+}
+
+.status-box {
+  display: grid;
+  min-height: 180px;
+  place-items: center;
+}
+
+.status-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.equipment-list {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.equipment-item mat-card-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+@media (max-width: 760px) {
+  .dashboard-header {
+    flex-direction: column;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .header-actions > * {
+    width: 100%;
+  }
+
+  .equipment-item mat-card-actions > * {
+    width: 100%;
+  }
+}

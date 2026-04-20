@@ -1,0 +1,263 @@
+<section class="equipment-form-page">
+  <header class="page-header">
+    <div>
+      <h1>
+        {{
+          isEditMode()
+            ? ('adminForm.editTitle' | translate)
+            : ('adminForm.newTitle' | translate)
+        }}
+      </h1>
+      <p>{{ 'adminForm.subtitle' | translate }}</p>
+    </div>
+
+    <a mat-button routerLink="/admin">{{ 'common.backToAdmin' | translate }}</a>
+  </header>
+
+  @if (loading()) {
+    <div class="status-box">
+      <mat-spinner diameter="34"></mat-spinner>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="equipment-form">
+      @if (errorMessage()) {
+        <mat-card appearance="outlined" class="status-card">
+          <p>{{ errorMessage() }}</p>
+        </mat-card>
+      }
+
+      <mat-card appearance="outlined">
+        <mat-card-header>
+          <mat-card-title>{{ 'adminForm.generalData' | translate }}</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content class="card-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'adminForm.name' | translate }}</mat-label>
+            <input matInput formControlName="nombre" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'adminForm.brand' | translate }}</mat-label>
+            <input matInput formControlName="marca" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'adminForm.maintenanceStatus' | translate }}</mat-label>
+            <mat-select formControlName="estadoMantenimiento">
+              @for (state of maintenanceStates; track state) {
+                <mat-option [value]="state">
+                  {{ ('maintenanceState.' + state) | translate }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'adminForm.description' | translate }}</mat-label>
+            <textarea matInput rows="3" formControlName="descripcion"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'adminForm.technicalWarnings' | translate }}</mat-label>
+            <textarea
+              matInput
+              rows="3"
+              formControlName="advertenciasTecnicas"
+            ></textarea>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card appearance="outlined">
+        <mat-card-header>
+          <mat-card-title>{{ 'adminForm.mainMedia' | translate }}</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content class="card-grid">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'adminForm.mainImageUrl' | translate }}</mat-label>
+            <input matInput formControlName="fotoPrincipalUrl" />
+          </mat-form-field>
+
+          <div class="inline-actions full-width">
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="mainImageInput.click()"
+              [disabled]="uploadInProgress()"
+            >
+              {{ 'adminForm.uploadMainImage' | translate }}
+            </button>
+            <input
+              #mainImageInput
+              hidden
+              type="file"
+              accept="image/*"
+              (change)="uploadMainImage($event)"
+            />
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'adminForm.equipmentImages' | translate }}</mat-label>
+            <textarea
+              matInput
+              rows="4"
+              formControlName="imagenesEquipoTexto"
+            ></textarea>
+            <mat-hint>{{ 'adminForm.equipmentImagesHint' | translate }}</mat-hint>
+          </mat-form-field>
+
+          <div class="inline-actions full-width">
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="equipmentImageInput.click()"
+              [disabled]="uploadInProgress()"
+            >
+              {{ 'adminForm.uploadEquipmentImage' | translate }}
+            </button>
+            <input
+              #equipmentImageInput
+              hidden
+              type="file"
+              accept="image/*"
+              (change)="uploadEquipmentImage($event)"
+            />
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'adminForm.videoTitle' | translate }}</mat-label>
+            <input matInput formControlName="videoTitulo" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'adminForm.videoUrl' | translate }}</mat-label>
+            <input matInput formControlName="videoUrl" />
+          </mat-form-field>
+
+          <div class="inline-actions full-width">
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="videoInput.click()"
+              [disabled]="uploadInProgress()"
+            >
+              {{ 'adminForm.uploadVideo' | translate }}
+            </button>
+            <input
+              #videoInput
+              hidden
+              type="file"
+              accept="video/*"
+              (change)="uploadVideo($event)"
+            />
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card appearance="outlined">
+        <mat-card-header>
+          <mat-card-title>{{ 'adminForm.steps' | translate }}</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div formArrayName="pasos" class="steps-list">
+            @for (paso of pasos.controls; track trackByStepIndex($index, paso)) {
+              <mat-card appearance="outlined" class="step-card" [formGroupName]="$index">
+                <mat-card-header>
+                  <mat-card-title>
+                    {{ 'adminForm.stepNumber' | translate: { number: $index + 1 } }}
+                  </mat-card-title>
+                </mat-card-header>
+
+                <mat-card-content class="card-grid">
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'adminForm.stepTitle' | translate }}</mat-label>
+                    <input matInput formControlName="titulo" />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ 'adminForm.stepDescription' | translate }}</mat-label>
+                    <textarea matInput rows="3" formControlName="descripcion"></textarea>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ 'adminForm.stepWarning' | translate }}</mat-label>
+                    <textarea matInput rows="2" formControlName="advertencias"></textarea>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ 'adminForm.stepImages' | translate }}</mat-label>
+                    <textarea
+                      matInput
+                      rows="4"
+                      formControlName="imagenesTexto"
+                    ></textarea>
+                    <mat-hint>{{ 'adminForm.stepImagesHint' | translate }}</mat-hint>
+                  </mat-form-field>
+
+                  <div class="inline-actions full-width">
+                    <button
+                      mat-stroked-button
+                      type="button"
+                      (click)="stepImageInput.click()"
+                      [disabled]="uploadInProgress()"
+                    >
+                      {{ 'adminForm.uploadStepImage' | translate }}
+                    </button>
+                    <input
+                      #stepImageInput
+                      hidden
+                      type="file"
+                      accept="image/*"
+                      (change)="uploadStepImage($index, $event)"
+                    />
+                  </div>
+                </mat-card-content>
+
+                <mat-card-actions>
+                  <button mat-button type="button" (click)="movePasoUp($index)" [disabled]="$index === 0">
+                    <mat-icon>arrow_upward</mat-icon>
+                    {{ 'common.up' | translate }}
+                  </button>
+
+                  <button
+                    mat-button
+                    type="button"
+                    (click)="movePasoDown($index)"
+                    [disabled]="$index === pasos.length - 1"
+                  >
+                    <mat-icon>arrow_downward</mat-icon>
+                    {{ 'common.down' | translate }}
+                  </button>
+
+                  <button mat-button type="button" (click)="removePaso($index)">
+                    <mat-icon>delete</mat-icon>
+                    {{ 'common.remove' | translate }}
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            }
+          </div>
+
+          <button mat-stroked-button type="button" (click)="addPaso()">
+            <mat-icon>add</mat-icon>
+            {{ 'adminForm.addStep' | translate }}
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="form-actions">
+        <a mat-button routerLink="/admin">{{ 'common.cancel' | translate }}</a>
+        <button mat-flat-button type="submit" [disabled]="saving() || uploadInProgress()">
+          @if (saving()) {
+            <mat-spinner diameter="18"></mat-spinner>
+          } @else {
+            {{ 'common.save' | translate }}
+          }
+        </button>
+      </div>
+    </form>
+  }
+</section>

@@ -1,0 +1,172 @@
+<section class="detail-page">
+  @if (loading()) {
+    <div class="status-box">
+      <mat-spinner diameter="34"></mat-spinner>
+    </div>
+  } @else if (errorMessage()) {
+    <article class="status-card">
+      <p>{{ errorMessage() }}</p>
+    </article>
+  } @else if (notFound()) {
+    <article class="status-card">
+      <p>{{ 'detail.notFound' | translate }}</p>
+    </article>
+  } @else {
+    @if (equipo(); as item) {
+      <article class="hero">
+        @if (item.foto_principal_url) {
+          <img
+            [src]="item.foto_principal_url"
+            [alt]="item.nombre"
+            class="hero-image"
+            loading="lazy"
+          />
+        } @else {
+          <div class="hero-image placeholder">
+            <mat-icon>construction</mat-icon>
+          </div>
+        }
+
+        <div class="hero-overlay"></div>
+
+        <div class="hero-topbar">
+          <a mat-icon-button routerLink="/" class="glass-action" [attr.aria-label]="'detail.back' | translate">
+            <mat-icon>arrow_back_ios_new</mat-icon>
+          </a>
+
+          <button type="button" mat-icon-button class="glass-action" [attr.aria-label]="'detail.info' | translate">
+            <mat-icon>info</mat-icon>
+          </button>
+        </div>
+
+        <div class="hero-content">
+          <span class="hero-kicker">{{ item.marca || ('detail.noBrand' | translate) }}</span>
+          <h1>{{ item.nombre }}</h1>
+          <p>{{ 'detail.ref' | translate }} {{ item.id }}</p>
+        </div>
+      </article>
+
+      <nav class="detail-tabs" aria-label="Detail sections">
+        <button
+          type="button"
+          [class.is-active]="activeTab() === 'description'"
+          (click)="setActiveTab('description')"
+        >
+          {{ 'detail.tabDescription' | translate }}
+        </button>
+        <button
+          type="button"
+          [class.is-active]="activeTab() === 'protocol'"
+          (click)="setActiveTab('protocol')"
+        >
+          {{ 'detail.tabProtocol' | translate }}
+        </button>
+        <button
+          type="button"
+          [class.is-active]="activeTab() === 'warnings'"
+          (click)="setActiveTab('warnings')"
+        >
+          {{ 'detail.tabWarnings' | translate }}
+        </button>
+      </nav>
+
+      @if (activeTab() === 'description') {
+        <section class="detail-block">
+          <h2>{{ 'detail.description' | translate }}</h2>
+          <p>{{ item.descripcion || ('detail.emptyDescription' | translate) }}</p>
+
+          @if (item.video) {
+            <div class="visual-guide">
+              <h3>{{ 'detail.video' | translate }}</h3>
+              <a [href]="item.video.url_storage" target="_blank" rel="noopener noreferrer" class="video-link">
+                <div class="video-poster">
+                  @if (item.foto_principal_url) {
+                    <img [src]="item.foto_principal_url" [alt]="item.nombre" loading="lazy" />
+                  }
+                  <span class="play-button" aria-hidden="true">
+                    <mat-icon>play_arrow</mat-icon>
+                  </span>
+                </div>
+              </a>
+            </div>
+          }
+
+          @if (item.imagenes_equipo.length > 0) {
+            <div class="step-images">
+              @for (imagen of item.imagenes_equipo; track imagen.id) {
+                <img [src]="imagen.url" [alt]="imagen.alt_text || item.nombre" loading="lazy" />
+              }
+            </div>
+          }
+        </section>
+      }
+
+      @if (activeTab() === 'protocol') {
+        <section class="protocol-layout">
+          @if (item.video || item.foto_principal_url) {
+            <div class="visual-guide">
+              <h2>{{ 'detail.visualGuide' | translate }}</h2>
+              @if (item.video) {
+                <a [href]="item.video.url_storage" target="_blank" rel="noopener noreferrer" class="video-link">
+                  <div class="video-poster">
+                    @if (item.foto_principal_url) {
+                      <img [src]="item.foto_principal_url" [alt]="item.nombre" loading="lazy" />
+                    }
+                    <span class="play-button" aria-hidden="true">
+                      <mat-icon>play_arrow</mat-icon>
+                    </span>
+                  </div>
+                </a>
+              }
+            </div>
+          }
+
+          <div class="protocol-steps">
+            <h2>{{ 'detail.steps' | translate }}</h2>
+
+            @if (item.pasos.length === 0) {
+              <p class="empty-copy">{{ 'detail.noSteps' | translate }}</p>
+            } @else {
+              <div class="timeline">
+                @for (paso of item.pasos; track paso.id; let i = $index) {
+                  <article class="timeline-step">
+                    <div class="step-marker">{{ paso.orden }}</div>
+
+                    <div class="step-body">
+                      <div class="step-head">
+                        <mat-icon>{{ stepIcon(i) }}</mat-icon>
+                        <h3>{{ paso.titulo }}</h3>
+                      </div>
+
+                      <p>{{ paso.descripcion }}</p>
+                    </div>
+                  </article>
+                }
+              </div>
+            }
+
+            @if (item.advertencias_tecnicas) {
+              <article class="warning-card protocol-warning">
+                <mat-icon>warning</mat-icon>
+                <div>
+                  <h3>{{ 'detail.criticalWarning' | translate }}</h3>
+                  <p>{{ item.advertencias_tecnicas }}</p>
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      }
+
+      @if (activeTab() === 'warnings') {
+        <section class="detail-block">
+          <h2>{{ 'detail.warnings' | translate }}</h2>
+          <article class="warning-card">
+            <mat-icon>warning</mat-icon>
+            <p>{{ item.advertencias_tecnicas || ('detail.emptyWarnings' | translate) }}</p>
+          </article>
+        </section>
+      }
+    }
+  }
+</section>

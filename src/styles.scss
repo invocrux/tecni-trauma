@@ -1,0 +1,42 @@
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: 'Inter',
+      density: 0,
+    )
+  );
+}
+
+body {
+  color-scheme: light;
+  background: #ffffff;
+  color: var(--mat-sys-on-surface);
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  letter-spacing: -0.04em;
+}

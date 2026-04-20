@@ -1,0 +1,87 @@
+<section class="dashboard-page">
+  <header class="dashboard-header">
+    <div>
+      <h1>{{ 'adminDashboard.title' | translate }}</h1>
+      <p>{{ 'adminDashboard.subtitle' | translate }}</p>
+    </div>
+
+    <div class="header-actions">
+      <button mat-flat-button type="button" routerLink="/admin/equipos/nuevo">
+        <mat-icon>add</mat-icon>
+        {{ 'adminDashboard.newEquipment' | translate }}
+      </button>
+      <button mat-button type="button" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        {{ 'app.logout' | translate }}
+      </button>
+    </div>
+  </header>
+
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>{{ 'adminDashboard.searchLabel' | translate }}</mat-label>
+    <input
+      matInput
+      [value]="currentQuery()"
+      (input)="onSearchChange(searchInput.value)"
+      #searchInput
+      autocomplete="off"
+    />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  @if (loading()) {
+    <div class="status-box">
+      <mat-spinner diameter="34"></mat-spinner>
+    </div>
+  } @else if (errorMessage()) {
+    <mat-card appearance="outlined" class="status-card">
+      <p>{{ errorMessage() }}</p>
+      <button mat-flat-button type="button" (click)="loadEquipos(currentQuery())">
+        {{ 'common.retry' | translate }}
+      </button>
+    </mat-card>
+  } @else if (equipos().length === 0) {
+    <mat-card appearance="outlined" class="status-card">
+      <p>{{ 'adminDashboard.empty' | translate }}</p>
+    </mat-card>
+  } @else {
+    <div class="equipment-list">
+      @for (equipo of equipos(); track trackByEquipoId($index, equipo)) {
+        <mat-card appearance="outlined" class="equipment-item">
+          <mat-card-header>
+            <mat-card-title>{{ equipo.nombre }}</mat-card-title>
+            <mat-card-subtitle>{{ equipo.marca || ('publicList.noBrand' | translate) }}</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <mat-chip-set>
+              <mat-chip [highlighted]="true" [color]="equipo.activo ? 'primary' : 'warn'">
+                {{
+                  equipo.activo
+                    ? ('adminDashboard.statusActive' | translate)
+                    : ('adminDashboard.statusInactive' | translate)
+                }}
+              </mat-chip>
+            </mat-chip-set>
+          </mat-card-content>
+
+          <mat-card-actions>
+            <button mat-button type="button" [routerLink]="['/admin/equipos', equipo.id]">
+              {{ 'common.edit' | translate }}
+            </button>
+            <button mat-button type="button" (click)="toggleActive(equipo)">
+              {{
+                equipo.activo
+                  ? ('common.deactivate' | translate)
+                  : ('common.activate' | translate)
+              }}
+            </button>
+            <button mat-button type="button" (click)="deleteEquipo(equipo)">
+              {{ 'common.delete' | translate }}
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+</section>

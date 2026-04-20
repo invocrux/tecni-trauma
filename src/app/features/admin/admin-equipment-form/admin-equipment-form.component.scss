@@ -1,0 +1,107 @@
+.equipment-form-page {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.page-header {
+  align-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+.page-header p {
+  margin: 0.25rem 0 0;
+}
+
+.status-box {
+  display: grid;
+  min-height: 220px;
+  place-items: center;
+}
+
+.equipment-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.status-card {
+  padding: 1rem;
+}
+
+.card-grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 0.75rem;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.inline-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.steps-list {
+  display: grid;
+  gap: 0.8rem;
+  margin-bottom: 0.9rem;
+}
+
+.step-card mat-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+@media (max-width: 760px) {
+  .page-header {
+    flex-direction: column;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .inline-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .inline-actions > * {
+    width: 100%;
+  }
+
+  .step-card mat-card-actions > * {
+    width: 100%;
+  }
+
+  .form-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .form-actions > * {
+    width: 100%;
+  }
+}

@@ -1,0 +1,41 @@
+@if (showAppChrome()) {
+  <mat-toolbar class="topbar">
+    <a class="brand" routerLink="/">
+      <img src="/assets/TECNICLEAN.svg" alt="TECNICLEAN" />
+    </a>
+
+    <span class="spacer"></span>
+
+    <div class="toolbar-actions">
+      <div class="language-switch">
+        <button type="button" (click)="setLanguage('es')" [class.is-active]="currentLanguage() === 'es'">
+          ES
+        </button>
+        <span aria-hidden="true">/</span>
+        <button type="button" (click)="setLanguage('en')" [class.is-active]="currentLanguage() === 'en'">
+          EN
+        </button>
+      </div>
+
+      <a
+        mat-icon-button
+        class="icon-action"
+        [routerLink]="adminRoute()"
+        routerLinkActive="active-link"
+        [attr.aria-label]="'app.admin' | translate"
+      >
+        <mat-icon>account_circle</mat-icon>
+      </a>
+
+      @if (isAuthenticated()) {
+        <button mat-icon-button class="icon-action" type="button" (click)="logout()" [attr.aria-label]="'app.logout' | translate">
+          <mat-icon>logout</mat-icon>
+        </button>
+      }
+    </div>
+  </mat-toolbar>
+}
+
+<main class="shell">
+  <router-outlet></router-outlet>
+</main>

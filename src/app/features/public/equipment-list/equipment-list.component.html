@@ -1,0 +1,94 @@
+<section class="list-page">
+  <header class="catalog-header">
+    <div class="catalog-headline">
+      <div class="catalog-copy">
+        <span class="catalog-kicker">{{ 'publicList.kicker' | translate }}</span>
+        <h1>{{ 'publicList.title' | translate }}</h1>
+      </div>
+
+      <div class="catalog-avatar" aria-hidden="true">
+        <mat-icon>person</mat-icon>
+      </div>
+    </div>
+
+    <div class="search-row">
+      <label class="search-field" for="search-equipment">
+        <mat-icon aria-hidden="true">search</mat-icon>
+        <input
+          id="search-equipment"
+          type="search"
+          [value]="currentQuery()"
+          (input)="onSearchChange(searchInput.value)"
+          #searchInput
+          [placeholder]="'publicList.searchPlaceholder' | translate"
+          autocomplete="off"
+        />
+      </label>
+
+      <button
+        type="button"
+        class="search-action"
+        (click)="onQuickAction(searchInput)"
+        [attr.aria-label]="
+          currentQuery().trim().length > 0
+            ? ('publicList.clearSearch' | translate)
+            : ('publicList.focusSearch' | translate)
+        "
+      >
+        <mat-icon>
+          {{ currentQuery().trim().length > 0 ? 'close' : 'tune' }}
+        </mat-icon>
+      </button>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="status-box">
+      <mat-spinner diameter="34"></mat-spinner>
+    </div>
+  } @else if (errorMessage()) {
+    <article class="status-card">
+      <p>{{ errorMessage() }}</p>
+      <button mat-flat-button type="button" (click)="loadEquipos(currentQuery())">
+        {{ 'common.retry' | translate }}
+      </button>
+    </article>
+  } @else if (equipos().length === 0) {
+    <article class="status-card">
+      <p>{{ 'publicList.empty' | translate }}</p>
+    </article>
+  } @else {
+    <div class="grid">
+      @for (equipo of equipos(); track trackByEquipoId($index, equipo)) {
+        <a class="equipment-card" [routerLink]="['/equipo', equipo.id]" [style.--stagger]="$index">
+          <figure class="equipment-media">
+            @if (equipo.foto_principal_url) {
+              <img
+                class="equipment-image"
+                [src]="equipo.foto_principal_url"
+                [alt]="equipo.nombre"
+                loading="lazy"
+              />
+            } @else {
+              <div class="equipment-image placeholder">
+                <mat-icon>construction</mat-icon>
+              </div>
+            }
+          </figure>
+
+          <div class="equipment-content">
+            <p class="equipment-brand">
+              <span>{{ equipo.marca || ('publicList.noBrand' | translate) }}</span>
+            </p>
+            <h2>{{ equipo.nombre }}</h2>
+
+            <span class="details-link">
+              {{ 'publicList.cardAction' | translate }}
+              <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+            </span>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</section>
