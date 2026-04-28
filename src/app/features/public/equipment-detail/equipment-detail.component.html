@@ -73,7 +73,7 @@
       @if (activeTab() === 'description') {
         <section class="detail-block">
           <h2>{{ 'detail.description' | translate }}</h2>
-          <p>{{ item.descripcion || ('detail.emptyDescription' | translate) }}</p>
+          <p class="multiline-copy">{{ item.descripcion || ('detail.emptyDescription' | translate) }}</p>
 
           @if (item.video) {
             <div class="visual-guide">
@@ -138,7 +138,7 @@
                         <h3>{{ paso.titulo }}</h3>
                       </div>
 
-                      <p>{{ paso.descripcion }}</p>
+                      <p class="multiline-copy">{{ paso.descripcion }}</p>
                     </div>
                   </article>
                 }
@@ -150,7 +150,7 @@
                 <mat-icon>warning</mat-icon>
                 <div>
                   <h3>{{ 'detail.criticalWarning' | translate }}</h3>
-                  <p>{{ item.advertencias_tecnicas }}</p>
+                  <p class="multiline-copy">{{ item.advertencias_tecnicas }}</p>
                 </div>
               </article>
             }
@@ -163,7 +163,7 @@
           <h2>{{ 'detail.warnings' | translate }}</h2>
           <article class="warning-card">
             <mat-icon>warning</mat-icon>
-            <p>{{ item.advertencias_tecnicas || ('detail.emptyWarnings' | translate) }}</p>
+            <p class="multiline-copy">{{ item.advertencias_tecnicas || ('detail.emptyWarnings' | translate) }}</p>
           </article>
         </section>
       }

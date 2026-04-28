@@ -173,6 +173,10 @@
   margin: 0;
 }
 
+.multiline-copy {
+  white-space: pre-line;
+}
+
 .visual-guide {
   display: grid;
   gap: 0.6rem;
