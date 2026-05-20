@@ -36,6 +36,10 @@ export const routes: Routes = [
   {
     path: 'admin',
     canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./features/admin/admin-shell/admin-shell.component').then(
+        (m) => m.AdminShellComponent
+      ),
     children: [
       {
         path: '',
@@ -43,6 +47,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/admin/admin-dashboard/admin-dashboard.component').then(
             (m) => m.AdminDashboardComponent
+          ),
+      },
+      {
+        path: 'usuarios',
+        loadComponent: () =>
+          import('./features/admin/admin-users/admin-users.component').then(
+            (m) => m.AdminUsersComponent
           ),
       },
       {

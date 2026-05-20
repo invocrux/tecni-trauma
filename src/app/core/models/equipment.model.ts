@@ -67,10 +67,31 @@ export interface VideoEquipo {
   created_at: string;
 }
 
+export interface FichaTecnica {
+  id: number;
+  equipo_id: number;
+  nombre_documento: string | null;
+  url_pdf: string | null;
+  descripcion: string | null;
+  created_at: string;
+}
+
+export interface EsterilizacionEquipo {
+  id: number;
+  equipo_id: number;
+  metodo: string | null;
+  temperatura: string | null;
+  tiempo: string | null;
+  observaciones: string | null;
+  created_at: string;
+}
+
 export interface EquipoDetalle extends Equipo {
   imagenes_equipo: EquipoImagen[];
   pasos: PasoLimpieza[];
   video: VideoEquipo | null;
+  ficha_tecnica: FichaTecnica | null;
+  esterilizacion: EsterilizacionEquipo | null;
 }
 
 export interface EquipoInput {
@@ -107,4 +128,17 @@ export interface PasoInput {
 export interface VideoInput {
   titulo: string | null;
   url_storage: string;
+}
+
+export interface FichaTecnicaInput {
+  nombre_documento: string | null;
+  url_pdf: string | null;
+  descripcion: string | null;
+}
+
+export interface EsterilizacionEquipoInput {
+  metodo: string | null;
+  temperatura: string | null;
+  tiempo: string | null;
+  observaciones: string | null;
 }

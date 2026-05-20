@@ -73,30 +73,24 @@
       @if (activeTab() === 'description') {
         <section class="detail-block">
           <h2>{{ 'detail.description' | translate }}</h2>
-          <p class="multiline-copy">{{ item.descripcion || ('detail.emptyDescription' | translate) }}</p>
+          <p class="multiline-copy">{{ item.ficha_tecnica?.descripcion || item.descripcion || ('detail.emptyDescription' | translate) }}</p>
 
-          @if (item.video) {
-            <div class="visual-guide">
-              <h3>{{ 'detail.video' | translate }}</h3>
-              <a [href]="item.video.url_storage" target="_blank" rel="noopener noreferrer" class="video-link">
-                <div class="video-poster">
-                  @if (item.foto_principal_url) {
-                    <img [src]="item.foto_principal_url" [alt]="item.nombre" loading="lazy" />
-                  }
-                  <span class="play-button" aria-hidden="true">
-                    <mat-icon>play_arrow</mat-icon>
-                  </span>
-                </div>
-              </a>
-            </div>
-          }
-
-          @if (item.imagenes_equipo.length > 0) {
-            <div class="step-images">
-              @for (imagen of item.imagenes_equipo; track imagen.id) {
-                <img [src]="imagen.url" [alt]="imagen.alt_text || item.nombre" loading="lazy" />
-              }
-            </div>
+          @if (item.ficha_tecnica?.nombre_documento || item.ficha_tecnica?.url_pdf) {
+            <article class="document-card">
+              <div>
+                <h3>{{ item.ficha_tecnica?.nombre_documento || ('detail.technicalDocument' | translate) }}</h3>
+                @if (item.ficha_tecnica?.url_pdf) {
+                  <a
+                    class="document-link"
+                    [href]="item.ficha_tecnica?.url_pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {{ 'detail.openPdf' | translate }}
+                  </a>
+                }
+              </div>
+            </article>
           }
         </section>
       }
@@ -154,6 +148,7 @@
                 </div>
               </article>
             }
+
           </div>
         </section>
       }
@@ -161,10 +156,38 @@
       @if (activeTab() === 'warnings') {
         <section class="detail-block">
           <h2>{{ 'detail.warnings' | translate }}</h2>
-          <article class="warning-card">
-            <mat-icon>warning</mat-icon>
-            <p class="multiline-copy">{{ item.advertencias_tecnicas || ('detail.emptyWarnings' | translate) }}</p>
-          </article>
+
+          @if (item.esterilizacion?.metodo || item.esterilizacion?.temperatura || item.esterilizacion?.tiempo || item.esterilizacion?.observaciones || item.advertencias_tecnicas) {
+            <div class="sterilization-list">
+              @if (item.esterilizacion?.metodo) {
+                <article class="sterilization-list__item">
+                  <span>{{ 'detail.sterilizationMethod' | translate }}</span>
+                  <strong>{{ item.esterilizacion?.metodo }}</strong>
+                </article>
+              }
+
+              @if (item.esterilizacion?.temperatura) {
+                <article class="sterilization-list__item">
+                  <span>{{ 'detail.sterilizationTemperature' | translate }}</span>
+                  <strong>{{ item.esterilizacion?.temperatura }}</strong>
+                </article>
+              }
+
+              @if (item.esterilizacion?.tiempo) {
+                <article class="sterilization-list__item">
+                  <span>{{ 'detail.sterilizationTime' | translate }}</span>
+                  <strong>{{ item.esterilizacion?.tiempo }}</strong>
+                </article>
+              }
+
+              @if (item.esterilizacion?.observaciones || item.advertencias_tecnicas) {
+                <article class="sterilization-list__item sterilization-list__item--full">
+                  <span>{{ 'detail.sterilizationObservations' | translate }}</span>
+                  <p class="multiline-copy">{{ item.esterilizacion?.observaciones || item.advertencias_tecnicas }}</p>
+                </article>
+              }
+            </div>
+          }
         </section>
       }
     }

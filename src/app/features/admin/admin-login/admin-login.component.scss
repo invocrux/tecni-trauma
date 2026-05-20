@@ -19,31 +19,12 @@
   text-align: center;
 }
 
-.brand-icon {
-  align-items: center;
-  background: #004482;
-  border-radius: 1rem;
-  color: #ffffff;
-  display: inline-flex;
-  height: 4rem;
-  justify-content: center;
+.brand-logo {
+  display: block;
+  height: auto;
   margin-bottom: 0.9rem;
-  width: 4rem;
-}
-
-.brand-icon mat-icon {
-  font-size: 2rem;
-  height: 2rem;
-  width: 2rem;
-}
-
-.brand-block h1 {
-  color: #004482;
-  font-family: 'Manrope', 'Inter', sans-serif;
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: -0.05em;
-  margin: 0;
+  max-width: min(260px, 76vw);
+  width: 100%;
 }
 
 .brand-block p {

@@ -1,0 +1,192 @@
+<section class="users-page">
+  <header class="users-page__header">
+    <h1>{{ 'adminUsers.title' | translate }}</h1>
+    <p>{{ 'adminUsers.subtitle' | translate }}</p>
+
+    @if (canCreateUsers()) {
+      <button type="button" class="users-create-btn" (click)="openCreateForm()">
+        <mat-icon>person_add</mat-icon>
+        {{ 'adminUsers.newUser' | translate }}
+      </button>
+    }
+  </header>
+
+  @if (showCreateForm()) {
+    <article class="create-user-card">
+      <header class="create-user-card__header">
+        <div>
+          <h2>{{ 'adminUsers.newUser' | translate }}</h2>
+          <p>{{ 'adminUsers.newUserSubtitle' | translate }}</p>
+        </div>
+
+        <button type="button" class="create-user-card__close" (click)="closeCreateForm()" [attr.aria-label]="'common.cancel' | translate">
+          <mat-icon>close</mat-icon>
+        </button>
+      </header>
+
+      <div class="create-user-form">
+        <label class="create-user-field">
+          <span>{{ 'adminUsers.fullName' | translate }}</span>
+          <input
+            type="text"
+            [value]="createDraft().fullName"
+            (input)="patchCreateDraft({ fullName: fullNameInput.value })"
+            #fullNameInput
+          />
+        </label>
+
+        <label class="create-user-field">
+          <span>{{ 'adminUsers.email' | translate }}</span>
+          <input
+            type="email"
+            [value]="createDraft().email"
+            (input)="patchCreateDraft({ email: emailInput.value })"
+            #emailInput
+          />
+        </label>
+
+        <label class="create-user-field">
+          <span>{{ 'adminUsers.password' | translate }}</span>
+          <input
+            type="text"
+            [value]="createDraft().password"
+            (input)="patchCreateDraft({ password: passwordInput.value })"
+            #passwordInput
+          />
+        </label>
+
+        @if (canAssignAdminRole()) {
+          <label class="create-user-field">
+            <span>{{ 'adminUsers.role' | translate }}</span>
+            <select
+              [value]="createDraft().role"
+              (change)="patchCreateDraft({ role: roleSelect.value === 'admin' ? 'admin' : 'staff' })"
+              #roleSelect
+            >
+              <option value="staff">{{ 'adminUsers.roleStaff' | translate }}</option>
+              <option value="admin">{{ 'adminUsers.roleAdmin' | translate }}</option>
+            </select>
+          </label>
+        }
+
+        @if (createError()) {
+          <p class="create-user-error">{{ createError() }}</p>
+        }
+
+        <div class="create-user-actions">
+          <button type="button" class="user-action" (click)="closeCreateForm()">
+            {{ 'common.cancel' | translate }}
+          </button>
+          <button type="button" class="user-action user-action--primary" [disabled]="createInProgress()" (click)="submitCreateUser()">
+            {{ 'adminUsers.createUser' | translate }}
+          </button>
+        </div>
+      </div>
+    </article>
+  }
+
+  <section class="users-search">
+    <div class="users-search__shell">
+      <mat-icon>search</mat-icon>
+      <input
+        type="search"
+        autocomplete="off"
+        [value]="searchQuery()"
+        (input)="searchQuery.set(searchInput.value)"
+        [placeholder]="'adminUsers.searchPlaceholder' | translate"
+        #searchInput
+      />
+    </div>
+  </section>
+
+  @if (loading()) {
+    <div class="users-status-box">
+      <mat-spinner diameter="34"></mat-spinner>
+    </div>
+  } @else if (errorMessage()) {
+    <article class="users-empty">
+      <p>{{ errorMessage() }}</p>
+    </article>
+  } @else {
+    <div class="users-grid">
+      @for (user of filteredUsers(); track trackByUserId($index, user)) {
+      <article class="user-card" [class.user-card--pending]="user.status === 'pending'">
+        <div class="user-card__head">
+          <div class="user-card__identity">
+            <div class="user-card__avatar" [class.user-card__avatar--pending]="user.status === 'pending'">
+              <mat-icon>person</mat-icon>
+            </div>
+
+            <div>
+              <h2>{{ displayName(user) }}</h2>
+              <p>{{ user.email }}</p>
+            </div>
+          </div>
+
+          <span class="user-role" [class.user-role--pending]="user.status === 'pending' || user.status === 'disabled'">
+            {{ roleLabelKey(user.role, user.status) | translate }}
+          </span>
+        </div>
+
+        @if (isProtectedUser(user)) {
+          <div class="user-card__protected">
+            <mat-icon>verified_user</mat-icon>
+            <span>{{ 'adminUsers.protectedUser' | translate }}</span>
+          </div>
+        }
+
+        <footer class="user-card__footer">
+          <div class="user-card__activity" [class.user-card__activity--pending]="user.status === 'pending' || user.status === 'disabled'">
+            <mat-icon>{{ activityIcon(user.status) }}</mat-icon>
+            <span>{{ activityText(user) }}</span>
+          </div>
+        </footer>
+
+        @if (canManageUsers() && !isProtectedUser(user)) {
+          <div class="user-card__actions">
+            <button
+              type="button"
+              class="user-action user-action--primary"
+              [disabled]="actionInProgressId() === user.id || user.role === 'admin'"
+              (click)="changeRole(user, 'admin')"
+            >
+              {{ 'adminUsers.makeAdmin' | translate }}
+            </button>
+
+            <button
+              type="button"
+              class="user-action"
+              [disabled]="actionInProgressId() === user.id || user.role === 'staff'"
+              (click)="changeRole(user, 'staff')"
+            >
+              {{ 'adminUsers.makeStaff' | translate }}
+            </button>
+
+            <button
+              type="button"
+              class="user-action"
+              [disabled]="actionInProgressId() === user.id"
+              (click)="toggleStatus(user)"
+            >
+              {{ (user.status === 'disabled' ? 'adminUsers.activateUser' : 'adminUsers.disableUser') | translate }}
+            </button>
+
+            <button
+              type="button"
+              class="user-action user-action--danger"
+              [disabled]="actionInProgressId() === user.id"
+              (click)="deleteUser(user)"
+            >
+              {{ 'adminUsers.deleteUser' | translate }}
+            </button>
+          </div>
+        }
+      </article>
+      } @empty {
+        <article class="users-empty">
+          <p>{{ 'adminUsers.empty' | translate }}</p>
+        </article>
+      }
+    </div>
+  }
+</section>

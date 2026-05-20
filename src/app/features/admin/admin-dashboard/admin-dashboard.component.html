@@ -1,86 +1,88 @@
 <section class="dashboard-page">
   <header class="dashboard-header">
-    <div>
+    <div class="dashboard-copy">
+      <p class="dashboard-kicker">{{ 'adminShell.equipment' | translate }}</p>
       <h1>{{ 'adminDashboard.title' | translate }}</h1>
       <p>{{ 'adminDashboard.subtitle' | translate }}</p>
     </div>
 
     <div class="header-actions">
-      <button mat-flat-button type="button" routerLink="/admin/equipos/nuevo">
+      <a class="dashboard-primary-action" routerLink="/admin/equipos/nuevo">
         <mat-icon>add</mat-icon>
         {{ 'adminDashboard.newEquipment' | translate }}
-      </button>
-      <button mat-button type="button" (click)="logout()">
-        <mat-icon>logout</mat-icon>
-        {{ 'app.logout' | translate }}
-      </button>
+      </a>
     </div>
   </header>
 
-  <mat-form-field appearance="outline" class="search-field">
-    <mat-label>{{ 'adminDashboard.searchLabel' | translate }}</mat-label>
+  <label class="search-shell" for="admin-search-equipment">
+    <mat-icon>search</mat-icon>
     <input
-      matInput
+      id="admin-search-equipment"
       [value]="currentQuery()"
       (input)="onSearchChange(searchInput.value)"
       #searchInput
       autocomplete="off"
+      [placeholder]="'adminDashboard.searchLabel' | translate"
     />
-    <mat-icon matSuffix>search</mat-icon>
-  </mat-form-field>
+  </label>
 
   @if (loading()) {
     <div class="status-box">
       <mat-spinner diameter="34"></mat-spinner>
     </div>
   } @else if (errorMessage()) {
-    <mat-card appearance="outlined" class="status-card">
+    <article class="status-card">
       <p>{{ errorMessage() }}</p>
-      <button mat-flat-button type="button" (click)="loadEquipos(currentQuery())">
+      <button class="dashboard-primary-action dashboard-primary-action--inline" type="button" (click)="loadEquipos(currentQuery())">
         {{ 'common.retry' | translate }}
       </button>
-    </mat-card>
+    </article>
   } @else if (equipos().length === 0) {
-    <mat-card appearance="outlined" class="status-card">
+    <article class="status-card">
       <p>{{ 'adminDashboard.empty' | translate }}</p>
-    </mat-card>
+    </article>
   } @else {
     <div class="equipment-list">
       @for (equipo of equipos(); track trackByEquipoId($index, equipo)) {
-        <mat-card appearance="outlined" class="equipment-item">
-          <mat-card-header>
-            <mat-card-title>{{ equipo.nombre }}</mat-card-title>
-            <mat-card-subtitle>{{ equipo.marca || ('publicList.noBrand' | translate) }}</mat-card-subtitle>
-          </mat-card-header>
+        <article class="equipment-item">
+          <div class="equipment-item__media">
+            @if (equipo.foto_principal_url) {
+              <img [src]="equipo.foto_principal_url" [alt]="equipo.nombre" loading="lazy" />
+            } @else {
+              <div class="equipment-item__placeholder">
+                <mat-icon>biotech</mat-icon>
+              </div>
+            }
 
-          <mat-card-content>
-            <mat-chip-set>
-              <mat-chip [highlighted]="true" [color]="equipo.activo ? 'primary' : 'warn'">
-                {{
-                  equipo.activo
-                    ? ('adminDashboard.statusActive' | translate)
-                    : ('adminDashboard.statusInactive' | translate)
-                }}
-              </mat-chip>
-            </mat-chip-set>
-          </mat-card-content>
-
-          <mat-card-actions>
-            <button mat-button type="button" [routerLink]="['/admin/equipos', equipo.id]">
-              {{ 'common.edit' | translate }}
-            </button>
-            <button mat-button type="button" (click)="toggleActive(equipo)">
+            <span class="equipment-item__state" [class.is-inactive]="!equipo.activo">
               {{
                 equipo.activo
-                  ? ('common.deactivate' | translate)
-                  : ('common.activate' | translate)
+                  ? ('adminDashboard.statusActive' | translate)
+                  : ('adminDashboard.statusInactive' | translate)
               }}
-            </button>
-            <button mat-button type="button" (click)="deleteEquipo(equipo)">
-              {{ 'common.delete' | translate }}
-            </button>
-          </mat-card-actions>
-        </mat-card>
+            </span>
+          </div>
+
+          <div class="equipment-item__body">
+            <p class="equipment-item__brand">{{ equipo.marca || ('publicList.noBrand' | translate) }}</p>
+            <h2>{{ equipo.nombre }}</h2>
+
+            <div class="equipment-item__meta">
+              <span class="equipment-item__maintenance" [attr.data-maintenance]="equipo.estado_mantenimiento">
+                {{ ('maintenanceState.' + equipo.estado_mantenimiento) | translate }}
+              </span>
+            </div>
+
+            <div class="equipment-item__actions">
+              <a class="equipment-item__action equipment-item__action--primary" [routerLink]="['/admin/equipos', equipo.id]">
+                {{ 'common.edit' | translate }}
+              </a>
+              <button class="equipment-item__action equipment-item__action--danger" type="button" (click)="deleteEquipo(equipo)">
+                {{ 'common.delete' | translate }}
+              </button>
+            </div>
+          </div>
+        </article>
       }
     </div>
   }

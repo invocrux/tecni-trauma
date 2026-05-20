@@ -1,6 +1,11 @@
 <section class="equipment-form-page">
   <header class="page-header">
     <div>
+      <button class="back-button" type="button" (click)="goBack()">
+        <mat-icon>chevron_left</mat-icon>
+        {{ 'common.back' | translate }}
+      </button>
+
       <h1>
         {{
           isEditMode()
@@ -10,8 +15,6 @@
       </h1>
       <p>{{ 'adminForm.subtitle' | translate }}</p>
     </div>
-
-    <a mat-button routerLink="/admin">{{ 'common.backToAdmin' | translate }}</a>
   </header>
 
   @if (loading()) {
@@ -41,30 +44,56 @@
             <mat-label>{{ 'adminForm.brand' | translate }}</mat-label>
             <input matInput formControlName="marca" />
           </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card appearance="outlined">
+        <mat-card-header>
+          <mat-card-title>{{ 'adminForm.technicalSheet' | translate }}</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content class="card-grid">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'adminForm.technicalSheetDocumentName' | translate }}</mat-label>
+            <input matInput formControlName="fichaNombreDocumento" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'adminForm.technicalSheetPdfUrl' | translate }}</mat-label>
+            <input matInput formControlName="fichaUrlPdf" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'adminForm.technicalSheetDescription' | translate }}</mat-label>
+            <textarea matInput rows="4" formControlName="fichaDescripcion"></textarea>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card appearance="outlined">
+        <mat-card-header>
+          <mat-card-title>{{ 'adminForm.sterilization' | translate }}</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content class="card-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'adminForm.sterilizationMethod' | translate }}</mat-label>
+            <input matInput formControlName="esterilizacionMetodo" />
+          </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>{{ 'adminForm.maintenanceStatus' | translate }}</mat-label>
-            <mat-select formControlName="estadoMantenimiento">
-              @for (state of maintenanceStates; track state) {
-                <mat-option [value]="state">
-                  {{ ('maintenanceState.' + state) | translate }}
-                </mat-option>
-              }
-            </mat-select>
+            <mat-label>{{ 'adminForm.sterilizationTemperature' | translate }}</mat-label>
+            <input matInput formControlName="esterilizacionTemperatura" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'adminForm.sterilizationTime' | translate }}</mat-label>
+            <input matInput formControlName="esterilizacionTiempo" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ 'adminForm.description' | translate }}</mat-label>
-            <textarea matInput rows="3" formControlName="descripcion"></textarea>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ 'adminForm.technicalWarnings' | translate }}</mat-label>
-            <textarea
-              matInput
-              rows="3"
-              formControlName="advertenciasTecnicas"
-            ></textarea>
+            <mat-label>{{ 'adminForm.sterilizationObservations' | translate }}</mat-label>
+            <textarea matInput rows="4" formControlName="esterilizacionObservaciones"></textarea>
           </mat-form-field>
         </mat-card-content>
       </mat-card>
@@ -172,7 +201,7 @@
                 </mat-card-header>
 
                 <mat-card-content class="card-grid">
-                  <mat-form-field appearance="outline">
+                  <mat-form-field appearance="outline" class="full-width">
                     <mat-label>{{ 'adminForm.stepTitle' | translate }}</mat-label>
                     <input matInput formControlName="titulo" />
                   </mat-form-field>
@@ -181,39 +210,6 @@
                     <mat-label>{{ 'adminForm.stepDescription' | translate }}</mat-label>
                     <textarea matInput rows="3" formControlName="descripcion"></textarea>
                   </mat-form-field>
-
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>{{ 'adminForm.stepWarning' | translate }}</mat-label>
-                    <textarea matInput rows="2" formControlName="advertencias"></textarea>
-                  </mat-form-field>
-
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>{{ 'adminForm.stepImages' | translate }}</mat-label>
-                    <textarea
-                      matInput
-                      rows="4"
-                      formControlName="imagenesTexto"
-                    ></textarea>
-                    <mat-hint>{{ 'adminForm.stepImagesHint' | translate }}</mat-hint>
-                  </mat-form-field>
-
-                  <div class="inline-actions full-width">
-                    <button
-                      mat-stroked-button
-                      type="button"
-                      (click)="stepImageInput.click()"
-                      [disabled]="uploadInProgress()"
-                    >
-                      {{ 'adminForm.uploadStepImage' | translate }}
-                    </button>
-                    <input
-                      #stepImageInput
-                      hidden
-                      type="file"
-                      accept="image/*"
-                      (change)="uploadStepImage($index, $event)"
-                    />
-                  </div>
                 </mat-card-content>
 
                 <mat-card-actions>

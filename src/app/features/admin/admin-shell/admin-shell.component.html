@@ -1,0 +1,41 @@
+<section class="admin-shell">
+  <aside class="admin-sidebar">
+    <a class="admin-brand" routerLink="/admin">
+      <img src="/assets/BioGest.svg" alt="BIOGEST" />
+      <div>
+        <p class="admin-brand__kicker">{{ 'adminShell.kicker' | translate }}</p>
+        <p class="admin-brand__subtitle">{{ 'adminShell.subtitle' | translate }}</p>
+      </div>
+    </a>
+
+    <nav class="admin-nav" [attr.aria-label]="'adminShell.navigation' | translate">
+      @for (item of navItems; track item.route) {
+        <a
+          class="admin-nav__link"
+          [class.is-active]="isActive(item)"
+          [routerLink]="item.route"
+        >
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.labelKey | translate }}</span>
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <div class="admin-content">
+    <router-outlet></router-outlet>
+  </div>
+
+  <nav class="admin-mobile-nav" [attr.aria-label]="'adminShell.navigation' | translate">
+    @for (item of navItems; track item.route) {
+      <a
+        class="admin-mobile-nav__link"
+        [class.is-active]="isActive(item)"
+        [routerLink]="item.route"
+      >
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.labelKey | translate }}</span>
+      </a>
+    }
+  </nav>
+</section>

@@ -182,6 +182,28 @@
   gap: 0.6rem;
 }
 
+.document-card {
+  background: #f3f4f5;
+  border-radius: 1rem;
+  padding: 0.95rem;
+}
+
+.document-card h3 {
+  color: #1d303e;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.document-link {
+  color: #004482;
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-top: 0.45rem;
+  text-decoration: none;
+}
+
 .visual-guide h3 {
   color: #7f8f99;
   font-size: 0.72rem;
@@ -339,6 +361,37 @@
   font-size: 0.86rem;
   font-weight: 800;
   margin: 0 0 0.2rem;
+}
+
+.sterilization-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.sterilization-list__item {
+  background: #f3f4f5;
+  border-radius: 0.95rem;
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.85rem;
+}
+
+.sterilization-list__item span {
+  color: #637682;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sterilization-list__item strong {
+  color: #1d303e;
+  font-size: 0.94rem;
+}
+
+.sterilization-list__item p {
+  color: #364955;
+  margin: 0;
 }
 
 .protocol-layout {

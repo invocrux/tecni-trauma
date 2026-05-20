@@ -5,7 +5,11 @@ import {
   EquipoImagen,
   EquipoImageInput,
   EquipoInput,
+  EsterilizacionEquipo,
+  EsterilizacionEquipoInput,
   EstadoMantenimiento,
+  FichaTecnica,
+  FichaTecnicaInput,
   ImagenPaso,
   PasoInput,
   PasoLimpieza,
@@ -37,6 +41,7 @@ interface PasoLimpiezaDbRow {
   id: number;
   id_equipo: number;
   numero_paso: number;
+  titulo: string | null;
   descripcion: string;
   created_at: string;
 }
@@ -49,11 +54,37 @@ interface VideoEquipoDbRow {
   created_at: string;
 }
 
+interface FichaTecnicaDbRow {
+  id: number;
+  id_equipo: number;
+  nombre_documento: string | null;
+  url_pdf: string | null;
+  descripcion: string | null;
+  created_at: string;
+}
+
+interface EsterilizacionEquipoDbRow {
+  id: number;
+  id_equipo: number;
+  metodo: string | null;
+  temperatura: string | null;
+  tiempo: string | null;
+  observaciones: string | null;
+  created_at: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class EquiposService {
   private readonly supabase = inject(SupabaseService).client;
 
   async getPublicEquipos(search = ''): Promise<Equipo[]> {
+    return this.getPublicEquiposByFilters(search, null);
+  }
+
+  async getPublicEquiposByFilters(
+    search = '',
+    brandId: number | null = null
+  ): Promise<Equipo[]> {
     const { data, error } = await this.supabase
       .from('equipos')
       .select('id,nombre,id_marca,descripcion,advertencias,estado,created_at')
@@ -69,7 +100,20 @@ export class EquiposService {
     const mainImageMap = await this.loadMainImagesMap(rows.map((equipo) => equipo.id));
     const mapped = rows.map((equipo) => this.mapEquipoRow(equipo, brandsMap, mainImageMap));
 
-    return this.filterBySearch(mapped, search);
+    return this.filterBySearch(this.filterByBrand(mapped, brandId), search);
+  }
+
+  async getBrands(): Promise<Array<{ id: number; nombre: string }>> {
+    const { data, error } = await this.supabase
+      .from('marcas')
+      .select('id,nombre')
+      .order('nombre', { ascending: true });
+
+    if (error) {
+      throw error;
+    }
+
+    return (data ?? []) as Array<{ id: number; nombre: string }>;
   }
 
   async getAdminEquipos(search = ''): Promise<Equipo[]> {
@@ -152,6 +196,28 @@ export class EquiposService {
       throw videoError;
     }
 
+    const { data: fichaData, error: fichaError } = await this.supabase
+      .from('fichas_tecnicas')
+      .select('*')
+      .eq('id_equipo', equipoId)
+      .order('id', { ascending: false })
+      .limit(1);
+
+    if (fichaError) {
+      throw fichaError;
+    }
+
+    const { data: esterilizacionData, error: esterilizacionError } = await this.supabase
+      .from('esterilizacion_equipo')
+      .select('*')
+      .eq('id_equipo', equipoId)
+      .order('id', { ascending: false })
+      .limit(1);
+
+    if (esterilizacionError) {
+      throw esterilizacionError;
+    }
+
     const mappedEquipo = this.mapEquipoRow(equipoRow, brandsMap);
     const mainPhotoFromImages = imagenesEquipo.at(0)?.url_imagen ?? null;
 
@@ -163,6 +229,12 @@ export class EquiposService {
       ),
       pasos,
       video: this.mapVideoRow((videoData as VideoEquipoDbRow | null) ?? null),
+      ficha_tecnica: this.mapFichaTecnicaRow(
+        ((fichaData ?? []) as FichaTecnicaDbRow[]).at(0) ?? null
+      ),
+      esterilizacion: this.mapEsterilizacionRow(
+        ((esterilizacionData ?? []) as EsterilizacionEquipoDbRow[]).at(0) ?? null
+      ),
     };
   }
 
@@ -284,6 +356,7 @@ export class EquiposService {
       .map((paso, index) => ({
         id_equipo: equipoId,
         numero_paso: index + 1,
+        titulo: this.normalizeNullable(paso.titulo) ?? `Paso ${index + 1}`,
         descripcion: paso.descripcion.trim(),
       }))
       .filter((paso) => paso.descripcion.length > 0);
@@ -314,6 +387,73 @@ export class EquiposService {
           throw insertVideoError;
         }
       }
+    }
+  }
+
+  async saveTechnicalSheet(
+    equipoId: number,
+    fichaTecnica: FichaTecnicaInput
+  ): Promise<void> {
+    const normalized = this.normalizeFichaTecnicaInput(fichaTecnica);
+
+    const { error: deleteError } = await this.supabase
+      .from('fichas_tecnicas')
+      .delete()
+      .eq('id_equipo', equipoId);
+
+    if (deleteError) {
+      throw deleteError;
+    }
+
+    if (!normalized) {
+      return;
+    }
+
+    const { error: insertError } = await this.supabase
+      .from('fichas_tecnicas')
+      .insert({
+        id_equipo: equipoId,
+        nombre_documento: normalized.nombre_documento,
+        url_pdf: normalized.url_pdf,
+        descripcion: normalized.descripcion,
+      });
+
+    if (insertError) {
+      throw insertError;
+    }
+  }
+
+  async saveSterilization(
+    equipoId: number,
+    esterilizacion: EsterilizacionEquipoInput
+  ): Promise<void> {
+    const normalized = this.normalizeEsterilizacionInput(esterilizacion);
+
+    const { error: deleteError } = await this.supabase
+      .from('esterilizacion_equipo')
+      .delete()
+      .eq('id_equipo', equipoId);
+
+    if (deleteError) {
+      throw deleteError;
+    }
+
+    if (!normalized) {
+      return;
+    }
+
+    const { error: insertError } = await this.supabase
+      .from('esterilizacion_equipo')
+      .insert({
+        id_equipo: equipoId,
+        metodo: normalized.metodo,
+        temperatura: normalized.temperatura,
+        tiempo: normalized.tiempo,
+        observaciones: normalized.observaciones,
+      });
+
+    if (insertError) {
+      throw insertError;
     }
   }
 
@@ -358,6 +498,14 @@ export class EquiposService {
       const marca = (equipo.marca ?? '').toLocaleLowerCase();
       return nombre.includes(normalizedSearch) || marca.includes(normalizedSearch);
     });
+  }
+
+  private filterByBrand(equipos: Equipo[], brandId: number | null): Equipo[] {
+    if (brandId === null) {
+      return equipos;
+    }
+
+    return equipos.filter((equipo) => equipo.marca_id === brandId);
   }
 
   private async loadMainImagesMap(equipoIds: number[]): Promise<Map<number, string>> {
@@ -459,7 +607,7 @@ export class EquiposService {
       id: paso.id,
       equipo_id: paso.id_equipo,
       orden: paso.numero_paso,
-      titulo: `Paso ${paso.numero_paso}`,
+      titulo: this.normalizeNullable(paso.titulo) ?? `Paso ${paso.numero_paso}`,
       descripcion: paso.descripcion,
       advertencias: null,
       created_at: paso.created_at,
@@ -478,6 +626,39 @@ export class EquiposService {
       titulo: video.titulo,
       url_storage: video.url_video,
       created_at: video.created_at,
+    };
+  }
+
+  private mapFichaTecnicaRow(ficha: FichaTecnicaDbRow | null): FichaTecnica | null {
+    if (!ficha) {
+      return null;
+    }
+
+    return {
+      id: ficha.id,
+      equipo_id: ficha.id_equipo,
+      nombre_documento: ficha.nombre_documento,
+      url_pdf: ficha.url_pdf,
+      descripcion: ficha.descripcion,
+      created_at: ficha.created_at,
+    };
+  }
+
+  private mapEsterilizacionRow(
+    esterilizacion: EsterilizacionEquipoDbRow | null
+  ): EsterilizacionEquipo | null {
+    if (!esterilizacion) {
+      return null;
+    }
+
+    return {
+      id: esterilizacion.id,
+      equipo_id: esterilizacion.id_equipo,
+      metodo: esterilizacion.metodo,
+      temperatura: esterilizacion.temperatura,
+      tiempo: esterilizacion.tiempo,
+      observaciones: esterilizacion.observaciones,
+      created_at: esterilizacion.created_at,
     };
   }
 
@@ -554,6 +735,35 @@ export class EquiposService {
 
     const normalized = value.trim();
     return normalized.length > 0 ? normalized : null;
+  }
+
+  private normalizeFichaTecnicaInput(
+    ficha: FichaTecnicaInput
+  ): FichaTecnicaInput | null {
+    const normalized = {
+      nombre_documento: this.normalizeNullable(ficha.nombre_documento),
+      url_pdf: this.normalizeNullable(ficha.url_pdf),
+      descripcion: this.normalizeNullable(ficha.descripcion),
+    };
+
+    return normalized.nombre_documento || normalized.url_pdf || normalized.descripcion
+      ? normalized
+      : null;
+  }
+
+  private normalizeEsterilizacionInput(
+    esterilizacion: EsterilizacionEquipoInput
+  ): EsterilizacionEquipoInput | null {
+    const normalized = {
+      metodo: this.normalizeNullable(esterilizacion.metodo),
+      temperatura: this.normalizeNullable(esterilizacion.temperatura),
+      tiempo: this.normalizeNullable(esterilizacion.tiempo),
+      observaciones: this.normalizeNullable(esterilizacion.observaciones),
+    };
+
+    return normalized.metodo || normalized.temperatura || normalized.tiempo || normalized.observaciones
+      ? normalized
+      : null;
   }
 
   private normalizeEstadoMantenimientoFromEstado(estado: boolean): EstadoMantenimiento {

@@ -1,10 +1,10 @@
 {
-  "name": "Protocolos de limpieza",
-  "short_name": "Limpieza",
+  "name": "BIOGEST",
+  "short_name": "BIOGEST",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
-  "background_color": "#f5f7fa",
+  "background_color": "#ffffff",
   "theme_color": "#0b3d64",
   "icons": [
     {

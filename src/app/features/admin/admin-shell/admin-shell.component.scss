@@ -1,0 +1,137 @@
+.admin-shell {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  padding-bottom: 5.8rem;
+}
+
+.admin-sidebar {
+  display: none;
+}
+
+.admin-brand {
+  color: inherit;
+  display: grid;
+  gap: 0.8rem;
+  text-decoration: none;
+}
+
+.admin-brand img {
+  display: block;
+  height: auto;
+  max-width: 180px;
+  width: 100%;
+}
+
+.admin-brand__kicker {
+  color: #004482;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.admin-brand__subtitle {
+  color: #48626e;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  margin: 0.2rem 0 0;
+}
+
+.admin-nav {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.admin-nav__link,
+.admin-mobile-nav__link {
+  align-items: center;
+  color: #667985;
+  display: flex;
+  gap: 0.7rem;
+  text-decoration: none;
+}
+
+.admin-nav__link {
+  border-radius: 1rem;
+  min-height: 3rem;
+  padding: 0 0.95rem;
+}
+
+.admin-nav__link mat-icon,
+.admin-mobile-nav__link mat-icon {
+  font-size: 1.25rem;
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.admin-nav__link span,
+.admin-mobile-nav__link span {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.admin-nav__link.is-active,
+.admin-mobile-nav__link.is-active {
+  background: #ebf5ff;
+  color: #005cab;
+}
+
+.admin-content {
+  min-width: 0;
+}
+
+.admin-mobile-nav {
+  align-items: center;
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 1.5rem 1.5rem 0 0;
+  bottom: 0;
+  box-shadow: 0 -8px 32px 0 rgba(25, 28, 29, 0.06);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  left: 0;
+  padding: 0.75rem 0.8rem calc(0.75rem + env(safe-area-inset-bottom));
+  position: fixed;
+  width: 100%;
+  z-index: 30;
+}
+
+.admin-mobile-nav__link {
+  border-radius: 1rem;
+  flex-direction: column;
+  gap: 0.3rem;
+  justify-content: center;
+  min-height: 3.4rem;
+  padding: 0.45rem;
+}
+
+.admin-mobile-nav__link span {
+  font-size: 0.72rem;
+}
+
+@media (min-width: 960px) {
+  .admin-shell {
+    gap: 1.25rem;
+    grid-template-columns: minmax(220px, 250px) minmax(0, 1fr);
+    padding-bottom: 0;
+  }
+
+  .admin-sidebar {
+    background: #ffffff;
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px 0 rgba(25, 28, 29, 0.06);
+    display: grid;
+    gap: 1.15rem;
+    height: fit-content;
+    padding: 1.15rem;
+    position: sticky;
+    top: 1rem;
+  }
+
+  .admin-mobile-nav {
+    display: none;
+  }
+}

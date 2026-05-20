@@ -5,10 +5,6 @@
         <span class="catalog-kicker">{{ 'publicList.kicker' | translate }}</span>
         <h1>{{ 'publicList.title' | translate }}</h1>
       </div>
-
-      <div class="catalog-avatar" aria-hidden="true">
-        <mat-icon>person</mat-icon>
-      </div>
     </div>
 
     <div class="search-row">
@@ -28,18 +24,43 @@
       <button
         type="button"
         class="search-action"
-        (click)="onQuickAction(searchInput)"
-        [attr.aria-label]="
-          currentQuery().trim().length > 0
-            ? ('publicList.clearSearch' | translate)
-            : ('publicList.focusSearch' | translate)
-        "
+        (click)="toggleBrandFilter()"
+        [attr.aria-label]="'publicList.filterToggle' | translate"
+        [class.search-action--active]="isFilterOpen()"
       >
+        <span class="search-action__copy">{{ selectedBrandName() || ('publicList.filterToggle' | translate) }}</span>
         <mat-icon>
-          {{ currentQuery().trim().length > 0 ? 'close' : 'tune' }}
+          tune
         </mat-icon>
       </button>
     </div>
+
+    @if (isFilterOpen()) {
+      <section class="brand-filter-panel">
+        <p class="brand-filter-panel__title">{{ 'publicList.filterTitle' | translate }}</p>
+        <div class="brand-filter-panel__chips">
+          <button
+            type="button"
+            class="brand-chip"
+            [class.brand-chip--active]="selectedBrandId() === null"
+            (click)="selectBrand(null)"
+          >
+            {{ 'publicList.allBrands' | translate }}
+          </button>
+
+          @for (brand of brands(); track brand.id) {
+            <button
+              type="button"
+              class="brand-chip"
+              [class.brand-chip--active]="selectedBrandId() === brand.id"
+              (click)="selectBrand(brand.id)"
+            >
+              {{ brand.nombre }}
+            </button>
+          }
+        </div>
+      </section>
+    }
   </header>
 
   @if (loading()) {
